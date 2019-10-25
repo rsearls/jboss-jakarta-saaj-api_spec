@@ -132,7 +132,7 @@ class FactoryFinder {
         } catch (ClassNotFoundException e) {
            //ignore, JBoss Modules might not be available at all
         } catch (Exception e) {
-           throw new SOAPException(e);
+           //if it's not in moudle environment
         }
         if (moduleClassLoader != null) {
            try {
