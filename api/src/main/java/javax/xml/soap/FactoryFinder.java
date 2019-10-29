@@ -135,7 +135,7 @@ class FactoryFinder {
         } catch (InvocationTargetException e) {
            logger.fine("Unable to load JBoss module 'org.jboss.ws.saaj-impl':" + e.getMessage());
         } catch(Exception e) {
-           logger.fine("Unexpected error happenes" + e.getMessage());
+           logger.fine("Unexpected error happened" + e.getMessage());
         }
         if (moduleClassLoader != null) {
            try {
