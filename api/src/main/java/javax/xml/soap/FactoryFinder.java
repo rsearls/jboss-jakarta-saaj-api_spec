@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2004, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -96,6 +96,18 @@ class FactoryFinder {
         if (factory != null) {
             return factory;
         }
+        // try to find services in CLASSPATH
+        className = fromMetaInfServices(deprecatedFactoryId, tccl);
+        if (className != null) {
+            logger.log(Level.WARNING,
+                    "Using deprecated META-INF/services mechanism with non-standard property: {0}. " +
+                            "Property {1} should be used instead.",
+                    new Object[]{deprecatedFactoryId, factoryId});
+            Object result = newInstance(className, defaultClassName, tccl);
+            if (result != null) {
+                return (T) result;
+            }
+        }
         String serviceId = "META-INF/services/" + factoryId;
         ClassLoader moduleClassLoader = null;
         try {
@@ -161,19 +173,6 @@ class FactoryFinder {
           } catch( Exception ex ) {
           }
         }
-        // try to find services in CLASSPATH
-        className = fromMetaInfServices(deprecatedFactoryId, tccl);
-        if (className != null) {
-            logger.log(Level.WARNING,
-                    "Using deprecated META-INF/services mechanism with non-standard property: {0}. " +
-                            "Property {1} should be used instead.",
-                    new Object[]{deprecatedFactoryId, factoryId});
-            Object result = newInstance(className, defaultClassName, tccl);
-            if (result != null) {
-                return (T) result;
-            }
-        }
-
         // If not found and fallback should not be tried, return a null result.
         if (!tryFallback)
             return null;
