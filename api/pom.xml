@@ -56,8 +56,8 @@
 
     <licenses>
         <license>
-            <name>Eclipse Distribution License - v 1.0</name>
-            <url>http://www.eclipse.org/org/documents/edl-v10.php</url>
+            <name>Eclipse Distribution License, Version 1.0</name>
+            <url>http://repository.jboss.org/licenses/edl-1.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
