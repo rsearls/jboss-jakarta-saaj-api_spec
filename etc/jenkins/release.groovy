@@ -7,8 +7,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 // Job input parameters:
-//   SPEC_VERSION      - Specification version to release
-//   NEXT_SPEC_VERSION - Next specification snapshot version to set (e.g. 1.2.4-SNAPSHOT)
 //   API_VERSION       - API version to release
 //   NEXT_API_VERSION  - Next API snapshot version to set (e.g. 1.2.4-SNAPSHOT)
 //   BRANCH            - Branch to release
@@ -20,8 +18,6 @@
 //   GIT_USER_EMAIL      - Git user e-mail (for commits)
 //   SSH_CREDENTIALS_ID  - Jenkins ID of SSH credentials
 //   GPG_CREDENTIALS_ID  - Jenkins ID of GPG credentials (stored as KEYRING variable)
-//   SETTINGS_XML_ID     - Jenkins ID of settings.xml file
-//   SETTINGS_SEC_XML_ID - Jenkins ID of settings-security.xml file
 
 pipeline {
     
@@ -33,7 +29,6 @@ pipeline {
     }
 
     environment {
-        SPEC_DIR="${WORKSPACE}/spec"
         API_DIR="${WORKSPACE}/api"
     }
 
@@ -63,22 +58,11 @@ pipeline {
         // Perform release
         stage('Release') {
             steps {
-                configFileProvider([
-                        configFile(
-                            fileId: SETTINGS_XML_ID,
-                            targetLocation: '/home/jenkins/.m2/settings.xml'
-                        ), 
-                        configFile(
-                            fileId: SETTINGS_SEC_XML_ID, 
-                            targetLocation: '/home/jenkins/.m2/'
-                        )]) {
-                    sshagent([SSH_CREDENTIALS_ID]) {
-                        sh '''
-                            etc/jenkins/release.sh "${SPEC_VERSION}" "${NEXT_SPEC_VERSION}" \
-                                                   "${API_VERSION}" "${NEXT_API_VERSION}" \
-                                                   "${DRY_RUN}" "${OVERWRITE}"
-                        '''
-                    }
+                sshagent([SSH_CREDENTIALS_ID]) {
+                    sh '''
+                        etc/jenkins/release.sh "${API_VERSION}" "${NEXT_API_VERSION}" \
+                                               "${DRY_RUN}" "${OVERWRITE}"
+                    '''
                 }
             }
         }

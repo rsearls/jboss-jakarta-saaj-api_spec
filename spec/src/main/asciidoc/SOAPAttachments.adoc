@@ -1,0 +1,491 @@
+//
+// Copyright (c) 2020 Contributors to the Eclipse Foundation
+//
+
+:sectnums:
+== Introduction
+
+This specification was developed following the
+Java™ Community Process (JCP2.10). Comments from experts, participants,
+and the broader developer community were reviewed and incorporated into
+this specification.
+
+The SOAP with Attachments API for Java Specification, version 1.1 was a
+maintenance release of the Java™ API for XML Messaging (JAXM) 1.0
+specification. JAXM 1.0 was the final deliverable of JSR067 Expert Group
+(EG). The proposed changes specified in the JSR067 changelog and
+accepted on 15 April 2002, have been incorporated into this document.
+
+The proposed changes specified in the second
+JSR067 changelog and accepted on 23 April 2003, have been incorporated
+into this document as SOAP with Attachments API for Java Specification, version 1.2.
+
+The proposed changes specified in the third
+JSR067 changelog have been incorporated into this document as SOAP with Attachments API for Java
+Specification, version 1.3.
+
+The proposed changes specified in the fourth
+JSR067 changelog have been incorporated into this document as
+SOAP with Attachments API for Java Specification, version 1.4.
+
+Starting with Jakarta SOAP Attachments Specification, Version 2.0, 
+this document is developed under https://jakarta.ee/about/jesp/[Jakarta EE Specification Process]
+
+
+=== Acknowledgements
+
+This maintenance release is the product of
+collaborative work within the Java community.
+
+
+=== Terminology
+
+References in this document to SAAJ refer to the Jakarta SOAP with Attachments API
+unless otherwise noted.
+
+The keywords MUST, MUST NOT, REQUIRED, SHALL,
+SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL, when they
+appear in this document, are to be interpreted as described in RFC 2119
+as quoted here:
+
+MUST: This word, or the terms "REQUIRED" or
+"SHALL", mean that the definition is an absolute requirement of the
+specification.
+
+MUST NOT: This phrase, or the phrase "SHALL
+NOT", mean that the definition is an absolute prohibition of the
+specification.
+
+SHOULD: This word, or the adjective
+"RECOMMENDED", mean that there may exist valid reasons in particular
+circumstances to ignore a particular item, but the full implications
+must be understood and carefully weighed before choosing a different
+course.
+
+SHOULD NOT: This phrase, or the phrase "NOT
+RECOMMENDED", mean that there may exist valid reasons in particular
+circumstances when the particular behavior is acceptable or even useful,
+but the full implications should be understood and the case carefully
+weighed before implementing any behavior described with this label.
+
+MAY: This word, or the adjective "OPTIONAL",
+mean that an item is truly optional. One vendor may choose to include
+the item because a particular marketplace requires it or because the
+vendor feels that it enhances the product while another vendor may omit
+the same item. An implementation which does not include a particular
+option MUST be prepared to interoperate with another implementation
+which does include the option, though perhaps with reduced
+functionality. In the same vein an implementation which does include a
+particular option MUST be prepared to interoperate with another
+implementation which does not include the option (except, of course, for
+the feature the option provides.
+
+
+== Preface
+
+
+=== Audience
+
+This document is intended for developers using
+the Java™ programming language who wish to produce and consume messages
+conforming to the SOAP 1.1, and SOAP 1.2 specification and the SOAP
+Attachments Feature.
+
+Familiarity with the SOAP specifications
+(including the associated processing model), MIME standards, and XML is
+assumed.
+
+
+
+=== Abstract
+
+Jakarta SOAP with Attachments defines an API enabling developers to produce 
+and consume messages conforming to the SOAP 1.1, SOAP 1.2 and SOAP Attachments Feature.
+
+In the interest of backward compatibility, Jakarta SOAP Attachments Specification
+continues to offer a client-side communication capability enabling
+developers to communicate in a point-to-point and request-response
+manner with SOAP services bound to HTTP. This communication capability,
+within the context of the Jakarta SOAP Attachments Specification specification,
+is optional. However, specifications depending on Jakarta SOAP Attachments Specification
+are free to require support for the SOAP to HTTP binding.
+
+
+== Typographic Conventions
+
+[cols=",,",options="header"]
+|===
+|Typefacefootnote:[The settings on your browser might differ from these settings.]
+|Meaning
+|Examples
+
+|`AaBbCc123`
+|The names of commands, files, and directories; on-screen computer output
+|Edit your `.login` file.
+
+Use `ls -a` to list all files.
+
+`% You have mail`.
+
+| **AaBbCc123**
+|What you type, when contrasted with on-screen computer output
+|% **su**
+
+ `Password:`
+
+| __AaBbCc123__ |Book
+titles, new words or terms, words to be emphasized. Replace command-line
+variables with real names or values. a|
+Read Chapter 6 in the __User’s Guide__ .
+
+These are called __class__ options.
+
+You __must__ be superuser to do this.
+
+To delete a file, type `rm` __filename__ .
+
+|===
+
+== Package Overview
+
+
+This chapter presents an overview of the Jakarta SOAP Attachments
+which consists of the single package; `jakarta.xml.soap` . The intent here
+is to provide an overview of the package only, the details of which can
+be found in the following chapter.
+
+The `jakarta.xml.soap` package provides the
+primary abstraction for SOAP Messages with MIME attachments. Attachments
+may be entire XML documents, XML fragments, images, text documents, or
+any other content with a valid MIME type. In addition, this package
+provides a simple client-side view of a request-response style of
+interaction with a SOAP service.
+
+=== MessageFactory & SOAPMessage Objects
+
+The `MessageFactory` class is used to create
+`SOAPMessage` objects. Clients may create SOAPMessage objects by calling
+the `MessageFactory.createMessage` method.
+
+The `SOAPMessage` class is the root class for
+all SOAP messages. Such messages must contain a single `SOAPPart` object
+and may contain one or more `AttachmentPart` objects. The "on-the-wire"
+encoding of a SOAP message is governed by whether the `SOAPMessage`
+object includes `AttachmentPart` objects. If it does, the `SOAPMessage`
+object is encoded as a MIME message otherwise it is encoded as a simple
+XML message. Attachments may contain data of any type including XML. The
+SOAPPart is always XML.
+
+Jakarta SOAP Attachments allows for creation and consumption of
+both SOAP 1.1 and SOAP 1.2 messages by introducing the notion of
+Protocol aware MessageFactories. The protocol here refers to a
+particular version of SOAP. For example a SOAP 1.2 aware MessageFactory
+can be obtained by calling the MessageFactory.newInstance method and
+passing it the appropriate protocol identifier. The allowed protocol
+identifiers have been defined in SOAPConstants. For processing incoming
+messages a special protocol identifier called DYNAMIC_SOAP_PROTOCOL can
+be used to allow a Node to accept both SOAP 1.1 and SOAP 1.2 messages.
+
+
+
+=== SOAPPart & AttachmentPart
+
+The `SOAPPart` object is a MIME part
+containing the `SOAPEnvelope` object. The `SOAPEnvelope` object must
+contain a single `SOAPBody` object and may contain a `SOAPHeader`
+object.
+
+A `SOAPMessage` object may contain zero or
+more `AttachmentPart` objects. Each `AttachmentPart` object in turn
+contains application-specific content and corresponding MIME headers.
+The MIME headers consist of name/value pairs that are used to identify
+and describe the content. For MIME content-types of `text/plain` ,
+`text/html` and `text/xml` , the `DataContentHandler` object performs
+the necessary conversions to and from the Java types corresponding to
+the MIME types. Other MIME types can be supported by passing an
+`InputStream` object (that contains the content data) to the
+`AttachmentPart.setContent` method. Similarly, the contents and header
+from an `AttachmentPart` object can be retrieved using the `getContent`
+method. Depending on the `AttachmentPart` objects present, the returned
+`Object` can be either a typed Java object corresponding to the MIME
+type or an `InputStream` object that contains the content as bytes. The
+`clearContent` method is a helper method intended to facilitate the
+removal of all the content from an `AttachmentPart` object while leaving
+the header information.
+
+A Jakarta SOAP Attachments implementation must support the
+following MIME types. Additional MIME types may be supported using the
+`jakarta.activation.DataHandler` class and the Jakarta Activation Framework.
+
+
+
+.Jakarta SOAP Attachments supported MIME types
+[cols="1,2",options="header"]
+|===
+|MIME Type
+|Java Type
+
+|`text/plain`
+|`java.lang.String`
+
+|`multipart/*`
+|`jakarta.mail.internet.MimeMultipart`
+
+|`text/xml` or `application/xml`
+|`javax.xml.transform.Source`
+|===
+
+Jakarta SOAP Attachments API provides methods for setting and getting
+the Raw content of an Attachment. Methods have also been provided to get
+the content as Base64 encoded character data. Additionally a
+getAttachment method on the SOAPMessage provides for retrieval of an
+Attachment referenced from a SOAPElement using an href attribute as
+described in SOAP Messages with Attachments, or via a single Text child
+node containing a URI as described in the WS-I Attachments Profile 1.0
+for elements of schema type ref:swaRef
+
+=== MimeHeader(s) Objects
+
+The `MimeHeaders` class is a container for
+`MimeHeader` objects and serves as an abstraction for the MIME headers
+that must be present if an `AttachmentPart` object exists in a
+`SOAPMessage` object.
+
+The `MimeHeader` object is the abstraction for
+a name/value pair of a MIME header. A `MimeHeaders` object may contain
+one or more `MimeHeader` objects.
+
+=== SOAP Element
+
+The `SOAPElement` object is the base class for
+all of the classes that model the SOAP objects defined by the SOAP1.1
+and SOAP 1.2 specifications. A `SOAPElement` object may be used to model
+the following:
+
+* content in a `SOAPBody` object
+* content in a `SOAPHeader` object
+* content that can follow the `SOAPBody` object within a `SOAPEnvelope` object
+* whatever may follow the detail element in a `SOAPFault` object
+
+=== SOAPEnvelope & SOAPBody objects
+
+The `SOAPEnvelope` object is a container
+object for the `SOAPHeader` and `SOAPBody` portions of a `SOAPPart`
+object. The `SOAPEnvelope` object must contain a `SOAPBody` object, but
+the `SOAPHeader` object is optional.
+
+The `SOAPEnvelope` and `SOAPBody` objects both
+extend the `SOAPElement` object. The `SOAPBody` object models the
+contents of the SOAP body element in a SOAP message. A SOAP body element
+contains XML data that may determine how application-specific content
+must be processed.
+
+=== SOAPBodyElement & SOAPFault
+
+`SOAPBody` objects contain `SOAPBodyElement`
+objects that model the content of the SOAP body. An example of a
+`SOAPBodyElement` is the `SOAPFault` object.
+
+=== SOAPFaultElement & Detail
+
+The `SOAPFaultElement` is used to represent
+the contents of a `SOAPFault` object.
+
+The `Detail` interface is a container for
+`DetailEntry` objects that provide application-specific error
+information associated with the `SOAPBody` object that contains it.
+
+A `Detail` object is part of a `SOAPFault`
+object and may be retrieved using the `getDetail` method of the
+`SOAPFault` object.
+
+The `DetailEntry` object extends `SOAPElement`
+and models the contents of a `Detail` object.
+
+=== SOAPHeader & SOAPHeaderElement
+
+A `SOAPHeader` object is an abstraction of the
+SOAP header element. A `SOAPHeader` object can be created using the
+`SOAPEnvelope.addHeader` method. `SOAPHeader` objects can have only
+`SOAPHeaderElement` objects as their immediate children. The
+`addHeaderElement` method creates a new `HeaderElement` object and adds
+it to the `SOAPHeader` object.
+
+`SOAPHeader` and `SOAPHeaderElement` objects
+both extend the `SOAPElement` object. A `SOAPHeaderElement` object
+models the contents of the SOAP header of a SOAP envelope.
+
+=== SOAPConnection & SOAPConnectionFactory
+
+The `SOAPConnection` object represents a
+simple client-side view of a request-response style of SOAP messaging. A
+Jakarta SOAP Attachments client may choose to establish a synchronous point-to-point
+connection to a SOAP service using the `createConnection` method of the
+`SOAPConnectionFactory` object. Subsequently, a `SOAPMessage` may be
+sent to a remote party using the call method on the `SOAPConnection`
+object. Note that the call method will block until a `SOAPMessage`
+object is received.
+
+A Jakarta SOAP Attachments Specification based application may choose to use the
+call method to implement the client side of a simple point-to-point
+synchronous one-way message exchange scenario. In such a case, it is the
+application’s responsibility to ignore the `SOAPMessage` object returned
+by the call method because the `SOAPMessage` object’s only purpose is to
+unblock the client. It is assumed that a one-way service will not return
+a response to a request using the same connection when the
+`SOAPConnection.call` method was used to send the request.
+
+Jakarta SOAP Attachments Specification also provides support for the SOAP 1.2
+Response Message Exchange Pattern
+(http://www.w3.org/TR/2003/REC-soap12-part2-20030624/#soapresmep) via
+the `SOAPConnection.get` method. This method can be used for pure
+information retrieval, where the representation of an available
+resource, identified by a URI, is fetched using a HTTP GET request
+without affecting the resource in any way.
+
+=== SOAPException object
+
+The `SOAPException` object extends
+`java.lang.Exception` and is used to signal SOAP level exceptions.
+
+=== Node & Text objects
+
+The `Node` object models a node (element) of a
+DOM abstraction of an XML document.
+
+The `Text` object extends `Node` and
+represents a node whose value is text. A `Text` object may model either
+text that is content or text that is a comment.
+
+=== Name
+
+The `Name` object models an XML name. This
+interface provides methods for getting the local names,
+namespace-qualified names, the prefix associated with the namespace for
+the name, and the URI of the namespace.
+
+Name objects are created using the
+`SOAPEnvelope.createName` method.
+
+=== SOAPFactory & SOAPElementFactory
+
+These factories are intended primarily for
+the use of application components or tools that require the capability
+of inserting XML fragments into a SOAP Message. In SAAJ v1.1, the
+`SOAPElementFactory` has been deprecated in favor of `SOAPFactory` which
+serves as a super factory for the creation of `SOAPElement` , `Name` ,
+and `Detail` objects.
+
+=== SAAJMetaFactory
+
+This Factory is the access point for the
+implementation classes of all the other factories defined in the Jakarta SOAP
+Attachments API. All of the newInstance methods defined on factories in Jakarta
+SOAP Attachments API defer to instances of this class to do the actual object
+creation. The implementations of newInstance() methods (in SOAPFactory and
+MessageFactory) that existed in SAAJ 1.2 have been updated to also
+delegate to the SAAJMetaFactory when the SAAJ 1.2 defined lookup fails
+to locate the Factory implementation class name.
+
+`SAAJMetaFactory` is a service provider
+interface. There are no public methods on this class.
+
+=== SAAJResult
+
+This concrete class acts as a holder for the
+results of a JAXP transformation or a Jakarta XML Binding marshalling,
+in the form of a Jakarta SOAP Attachments tree. This class will make it easier
+for the end user when dealing with transformations in situations
+where the result is expected to be a valid Jakarta SOAP Attachments tree.
+The results can be accessed by using the getResult method.
+
+
+== Package: jakarta.xml.soap
+
+
+=== Description
+
+Provides the API for creating and building SOAP
+messages. This package is defined in the Jakarta SOAP
+with Attachments Specification.
+
+The API in the `jakarta.xml.soap` package allows
+you to do the following:
+
+* create a point-to-point connection to a specified endpoint
+* create a SOAP message
+* create an XML fragment
+* add content to the header of a SOAP message
+* add content to the body of a SOAP message
+* create attachment parts and add content to them
+* access/add/modify parts of a SOAP message
+* create/add/modify SOAP fault information
+* extract content from a SOAP message
+* send a SOAP request-response message
+
+In addition the APIs in the `jakarta.xml.soap`
+package extend their counterparts in the `org.w3c.dom` package. This
+means that the `SOAPPart` of a `SOAPMessage` is also a DOM Level 2
+`Document`, and can be manipulated as such by applications, tools and
+libraries that use DOM (see http://www.w3.org/DOM/ for more
+information). It is important to note that, while it is possible to use
+DOM APIs to add ordinary DOM nodes to a Jakarta SOAP Attachments tree,
+the Jakarta SOAP Attachments APIs are
+still required to return Jakarta SOAP Attachments types when examining or manipulating the
+tree. In order to accomplish this the Jakarta SOAP Attachments APIs (specifically
+`SOAPElement.getChildElements()`) are allowed to silently replace objects that are
+incorrectly typed relative to Jakarta SOAP Attachments Specification requirements
+with equivalent objects of the required type.
+These replacements must never cause the logical
+structure of the tree to change, so from the perspective of the DOM APIs
+the tree will remain unchanged. However, the physical composition of the
+tree will have changed so that references to the nodes that were
+replaced will refer to nodes that are no longer a part of the tree. The
+Jakarta SOAP Attachments APIs are not allowed to make these replacements if they are not
+required so the replacement objects will never subsequently be silently
+replaced by future calls to the Jakarta SOAP Attachments API.
+
+What this means in practical terms is that an
+application that starts to use Jakarta SOAP Attachments APIs on a tree after manipulating it
+using DOM APIs must assume that the tree has been translated into an all
+Jakarta SOAP Attachments tree and that any references to objects within the tree that were
+obtained using DOM APIs are no longer valid. Switching from Jakarta SOAP Attachments APIs to
+DOM APIs is not allowed to cause invalid references and neither is using
+Jakarta SOAP Attachments APIs exclusively. It is only switching from using DOM APIs on a
+particular Jakarta SOAP Attachments tree to using Jakarta SOAP Attachments APIs
+that causes the risk of invalid references.
+
+=== Discovery of Jakarta SOAP Attachments implementation
+
+There are several factories defined in the
+Jakarta SOAP Attachments API to discover and load specific implementation:
+
+* SOAPFactory
+* MessageFactory
+* SOAPConnectionFactory
+* SAAJMetaFactory
+
+First three define newInstance() method which
+uses a common lookup procedure to determine the implementation class:
+
+* Checks if a system property with the same
+name as the factory class is set (e.g. `jakarta.xml.soap.SOAPFactory`). If
+such property exists then its value is assumed to be the fully qualified
+name of the implementation class. This phase of the look up enables
+per-JVM override of the Jakarta SOAP Attachments implementation.
+
+* Use the configuration file "jaxm.properties".
+The file is in standard `Properties` format and typically located in the
+`conf` directory of the Java installation. It contains the fully qualified
+name of the implementation class with the key being the system property
+defined above.
+
+* Use the service-provider loading facilities,
+defined by the `ServiceLoader` class, to attempt to locate and load an
+implementation of the service using the default loading mechanism.
+
+* Finally, if all the steps above fail,
+`SAAJMetaFactory` instance is used to locate specific implementation (for
+`MessageFactory` and `SOAPFactory`) or platform default implementation is
+used (`SOAPConnectionFactory`). Whenever `SAAJMetaFactory` is used, its
+lookup procedure to get actual instance is performed.
