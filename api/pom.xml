@@ -15,15 +15,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.eclipse.ee4j</groupId>
-        <artifactId>project</artifactId>
-        <version>1.0.6</version>
-        <relativePath/>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>39</version>
     </parent>
 
     <properties>
         <copyright.exclude>${project.basedir}/copyright-exclude</copyright.exclude>
-        <copyright.ignoreyear>false</copyright.ignoreyear>
+        <copyright.ignoreyear>true</copyright.ignoreyear>
         <copyright.scmonly>true</copyright.scmonly>
         <copyright.templatefile>${project.basedir}/edl-copyright_template.txt</copyright.templatefile>
         <copyright.update>false</copyright.update>
@@ -41,17 +40,17 @@
         <vendor.name>Eclipse Foundation</vendor.name>
     </properties>
 
-    <groupId>jakarta.xml.soap</groupId>
-    <artifactId>jakarta.xml.soap-api</artifactId>
-    <version>2.0.1</version>
+    <groupId>org.jboss.spec.jakarta.xml.soap</groupId>
+    <artifactId>jboss-saaj-api_2.0_spec</artifactId>
+    <version>1.0.0.Final-SNAPSHOT</version>
     <description>Provides the API for creating and building SOAP messages.</description>
     <name>Jakarta SOAP with Attachments API</name>
-    <url>https://github.com/eclipse-ee4j/saaj-api</url>
+    <url>https://github.com/jboss/jboss-jakarta-saaj-api_spec</url>
 
     <scm>
-        <connection>scm:git:git://github.com/eclipse-ee4j/saaj-api.git</connection>
-        <developerConnection>scm:git:git:@github.com:eclipse-ee4j/saaj-api.git</developerConnection>
-        <url>https://github.com/eclipse-ee4j/saaj-api</url>
+        <connection>scm:git:https://github.com/jboss/jboss-jakarta-saaj-api_spec.git</connection>
+        <developerConnection>scm:git:https://github.com/jboss/jboss-jakarta-saaj-api_spec.git</developerConnection>
+        <url>https://github.com/jboss/jboss-jakarta-saaj-api_spec</url>
         <tag>HEAD</tag>
     </scm>
 
