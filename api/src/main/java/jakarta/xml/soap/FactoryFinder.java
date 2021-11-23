@@ -100,6 +100,18 @@ class FactoryFinder {
         if (factory != null) {
             return factory;
         }
+        // try to find services in CLASSPATH
+        className = fromMetaInfServices(deprecatedFactoryId, tccl);
+        if (className != null) {
+            logger.log(Level.WARNING,
+                    "Using deprecated META-INF/services mechanism with non-standard property: {0}. " +
+                            "Property {1} should be used instead.",
+                    new Object[]{deprecatedFactoryId, factoryId});
+            Object result = newInstance(className, defaultClassName, tccl);
+            if (result != null) {
+                return (T) result;
+            }
+        }
         String serviceId = "META-INF/services/" + factoryId;
         ClassLoader moduleClassLoader = null;
         try {
@@ -161,18 +173,7 @@ class FactoryFinder {
             } catch( Exception ex ) {
             }
         }
-        // try to find services in CLASSPATH
-        className = fromMetaInfServices(deprecatedFactoryId, tccl);
-        if (className != null) {
-            logger.log(Level.WARNING,
-                    "Using deprecated META-INF/services mechanism with non-standard property: {0}. " +
-                            "Property {1} should be used instead.",
-                    new Object[]{deprecatedFactoryId, factoryId});
-            Object result = newInstance(className, defaultClassName, tccl);
-            if (result != null) {
-                return (T) result;
-            }
-        }
+
 
         // handling Glassfish/OSGi (platform specific default)
         if (isOsgi()) {
