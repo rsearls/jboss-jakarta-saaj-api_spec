@@ -10,6 +10,8 @@
 
 package jakarta.xml.soap;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -94,7 +96,7 @@ class ServiceLoaderUtil {
 
     static <T extends Exception> ClassLoader contextClassLoader(ExceptionHandler<T> exceptionHandler) throws T {
         try {
-            return Thread.currentThread().getContextClassLoader();
+            return getContextClassLoader();
         } catch (Exception x) {
             throw exceptionHandler.createException(x, x.toString());
         }
@@ -104,6 +106,20 @@ class ServiceLoaderUtil {
 
         public abstract T createException(Throwable throwable, String message);
 
+    }
+
+    private static ClassLoader getContextClassLoader() {
+        final SecurityManager sm = System.getSecurityManager();
+        if (sm == null) {
+            return Thread.currentThread().getContextClassLoader();
+        }
+
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return Thread.currentThread().getContextClassLoader();
+            }
+        });
     }
 
 }
