@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -147,9 +148,11 @@ class FactoryFinder {
                 moduleClassLoader = (ClassLoader) moduleClass.getMethod("getClassLoader").invoke(module);
             }
         } catch (ClassNotFoundException e) {
-            //ignore, JBoss Modules might not be available at all
-        } catch (Exception e) {
-            throw new SOAPException(e);
+            logger.fine("Unable to load jboss module class:" + e.getMessage());
+        } catch (InvocationTargetException e) {
+            logger.fine("Unable to load JBoss module 'org.jboss.ws.saaj-impl':" + e.getMessage());
+        } catch(Exception e) {
+            logger.fine("Unexpected error happened" + e.getMessage());
         }
         if (moduleClassLoader != null) {
             try {
