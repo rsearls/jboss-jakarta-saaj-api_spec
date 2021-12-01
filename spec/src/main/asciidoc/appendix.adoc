@@ -1,3 +1,7 @@
+//
+// Copyright (c) 2020, 2021 Contributors to the Eclipse Foundation
+//
+
 == Appendix A: References
 
 For more information, refer to the following
@@ -27,6 +31,11 @@ http://www.ws-i.org/Profiles/AttachmentsProfile-1.0.html
 
 
 == Appendix B: Change History
+
+=== Changes in Version 3.0
+
+* `SOAPElementFactory` has been removed
+* `SOAPConnection.call` is no longer required to support `javax.xml.messaging.URLEndpoint`
 
 === Changes in Version 2.0
 

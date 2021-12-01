@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2004, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -54,7 +54,7 @@ public abstract class SAAJMetaFactory {
             "jakarta.xml.soap.MetaFactory";
 
     private static final String DEFAULT_META_FACTORY_CLASS =
-            "com.sun.xml.internal.messaging.saaj.soap.SAAJMetaFactoryImpl";
+            "com.sun.xml.messaging.saaj.soap.SAAJMetaFactoryImpl";
 
     /**
      * Creates a new instance of a concrete {@code SAAJMetaFactory} object.

@@ -41,8 +41,8 @@
     </properties>
 
     <groupId>org.jboss.spec.jakarta.xml.soap</groupId>
-    <artifactId>jboss-saaj-api_2.0_spec</artifactId>
-    <version>1.0.1.Final-SNAPSHOT</version>
+    <artifactId>jboss-saaj-api_3.0_spec</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
     <description>Provides the API for creating and building SOAP messages.</description>
     <name>Jakarta SOAP with Attachments API</name>
     <url>https://github.com/jboss/jboss-jakarta-saaj-api_spec</url>
@@ -89,7 +89,7 @@
     </mailingLists>
 
     <dependencies>
-        <!-- usign '-api' artifact here is causing issues for API consumers,
+        <!-- using '-api' artifact here is causing issues for API consumers,
              ie conflicts on JPMS, since one cannot have two artifacts having same
              packages on the path and 'provided' scope is not transitive -->
         <dependency>
@@ -109,6 +109,11 @@
 
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.4</version>
+                </plugin>
                 <plugin>
                     <groupId>org.glassfish.copyright</groupId>
                     <artifactId>glassfish-copyright-maven-plugin</artifactId>
@@ -159,6 +164,16 @@
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>${spotbugs.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0-M3</version>
                 </plugin>
             </plugins>
         </pluginManagement>
